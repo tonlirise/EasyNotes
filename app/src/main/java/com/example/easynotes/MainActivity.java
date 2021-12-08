@@ -27,7 +27,7 @@ public class MainActivity extends AppCompatActivity {
         arrNotes.add(new Note("Спорт","Записаться в спортзал.","Среда", 1));
         arrNotes.add(new Note("Парикхмахерская","Сходить на стрижку в 12:00","Пятница", 2));
         arrNotes.add(new Note("Тестовая 1","Тестовая запись номер 1","Суббота", 1));
-        arrNotes.add(new Note("Тестовая 2","Тестовая запись номер 2","Понедельник", 1));
+        arrNotes.add(new Note("Тестовая 2","Тестовая запись номер 2","Понедельник", 3));
         arrNotes.add(new Note("Тестовая 3","Тестовая запись номер 3","Вторник", 2));
         arrNotes.add(new Note("Тестовая 4","Тестовая запись номер 4","Среда", 1));
         arrNotes.add(new Note("Тестовая 5","Тестовая запись номер 5","Пятница", 2));

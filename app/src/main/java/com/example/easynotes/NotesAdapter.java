@@ -6,12 +6,13 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 
 public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.NoteViewHolder> {
-    private ArrayList<Note> arrNotes;
+    private final ArrayList<Note> arrNotes;
 
     public NotesAdapter(ArrayList<Note> arrNotes) {
         this.arrNotes = arrNotes;
@@ -30,7 +31,17 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.NoteViewHold
         holder.twTitle.setText(note.getsTitle());
         holder.twDiscription.setText(note.getsDiscription());
         holder.twDayOfWeek.setText(note.getsDayOfWeek());
-        holder.twPriority.setText(String.valueOf(note.getnPriority()));
+
+        int nColor;
+        switch (note.getnPriority()){
+            case 1: nColor = ContextCompat.getColor(holder.itemView.getContext(), android.R.color.holo_red_light);
+            break;
+            case 2: nColor = ContextCompat.getColor(holder.itemView.getContext(), android.R.color.holo_orange_light);
+            break;
+            default:
+                nColor = ContextCompat.getColor(holder.itemView.getContext(), android.R.color.holo_green_light);
+        }
+        holder.twTitle.setBackgroundColor(nColor);
     }
 
     @Override
@@ -39,17 +50,17 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.NoteViewHold
     }
 
     class NoteViewHolder extends RecyclerView.ViewHolder{
-        private TextView twTitle;
-        private TextView twDiscription;
-        private TextView twDayOfWeek;
-        private TextView twPriority;
+        private final TextView twTitle;
+        private final TextView twDiscription;
+        private final TextView twDayOfWeek;
 
         public NoteViewHolder(@NonNull View itemView) {
             super(itemView);
             twTitle = itemView.findViewById(R.id.textViewTitle);
             twDiscription = itemView.findViewById(R.id.textViewDiscription);
             twDayOfWeek = itemView.findViewById(R.id.textViewDayOfWeek);
-            twPriority = itemView.findViewById(R.id.textViewPriority);
+
+
         }
     }
 }
