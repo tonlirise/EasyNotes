@@ -1,10 +1,20 @@
 package com.example.easynotes;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.app.Activity;
+import android.app.Instrumentation;
+import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
 
 import org.w3c.dom.Node;
 
@@ -14,6 +24,17 @@ public class MainActivity extends AppCompatActivity {
 
     private RecyclerView recyclerView;
     private NotesAdapter notesAdapter;
+
+    ActivityResultLauncher<Intent> mActivityForResult = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
+            new ActivityResultCallback<ActivityResult>() {
+                @Override
+                public void onActivityResult(ActivityResult result) {
+                    if (result.getResultCode() == Activity.RESULT_OK) {
+                        Intent intent = result.getData();
+                        Log.d("test_res",intent.getStringExtra("test"));
+                    }
+                }
+            });
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,6 +58,11 @@ public class MainActivity extends AppCompatActivity {
         recyclerView = findViewById(R.id.recyclerViewNotes);
         recyclerView.setAdapter(notesAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-
     }
+
+    public void onClickAddBtn(View view) {
+        Intent intent = new Intent(this, AddNoteActivity.class);
+        mActivityForResult.launch(intent);
+    }
+
 }

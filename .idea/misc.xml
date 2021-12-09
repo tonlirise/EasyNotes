@@ -3,7 +3,8 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
-        <entry key="..\:/AndroidProjects/Java/Easynotes/app/src/main/res/layout/activity_main.xml" value="0.23366336633663368" />
+        <entry key="..\:/AndroidProjects/Java/Easynotes/app/src/main/res/layout/activity_add_note.xml" value="0.4" />
+        <entry key="..\:/AndroidProjects/Java/Easynotes/app/src/main/res/layout/activity_main.xml" value="0.2421875" />
         <entry key="..\:/AndroidProjects/Java/Easynotes/app/src/main/res/layout/activity_nodes_item.xml" value="0.536" />
         <entry key="..\:/AndroidProjects/Java/Easynotes/app/src/main/res/layout/note_activity.xml" value="0.39510939510939513" />
       </map>
