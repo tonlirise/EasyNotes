@@ -4,8 +4,10 @@ import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -24,14 +26,23 @@ public class MainActivity extends AppCompatActivity {
 
     private RecyclerView recyclerView;
     private NotesAdapter notesAdapter;
+    ArrayList<Note> arrNotes;
 
     ActivityResultLauncher<Intent> mActivityForResult = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
             new ActivityResultCallback<ActivityResult>() {
                 @Override
                 public void onActivityResult(ActivityResult result) {
                     if (result.getResultCode() == Activity.RESULT_OK) {
-                        Intent intent = result.getData();
-                        Log.d("test_res",intent.getStringExtra("test"));
+                        Bundle bundle = result.getData().getExtras();
+
+                        String sTitle = bundle.getString("title");
+                        String sDiscript = bundle.getString("discript");
+                        String sSpinDay = bundle.getString("spinDay");
+                        int nPriority = bundle.getInt("priority", 0);
+
+                        Note note = new Note(sTitle, sDiscript, sSpinDay, nPriority);
+                        arrNotes.add(note);
+                        notesAdapter.notifyDataSetChanged();
                     }
                 }
             });
@@ -41,28 +52,32 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        ArrayList<Note> arrNotes = new ArrayList<>();
-        arrNotes.add(new Note("Покупки","Купить хлеб, молоко и сахар.","Понедельник", 3));
-        arrNotes.add(new Note("Стомотолог","Записаться на приём к врачу","Понедельник", 1));
-        arrNotes.add(new Note("Работа","Составить сводный отчёт за полугодие.","Вторник", 2));
-        arrNotes.add(new Note("Спорт","Записаться в спортзал.","Среда", 1));
-        arrNotes.add(new Note("Парикхмахерская","Сходить на стрижку в 12:00","Пятница", 2));
-        arrNotes.add(new Note("Тестовая 1","Тестовая запись номер 1","Суббота", 1));
-        arrNotes.add(new Note("Тестовая 2","Тестовая запись номер 2","Понедельник", 3));
-        arrNotes.add(new Note("Тестовая 3","Тестовая запись номер 3","Вторник", 2));
-        arrNotes.add(new Note("Тестовая 4","Тестовая запись номер 4","Среда", 1));
-        arrNotes.add(new Note("Тестовая 5","Тестовая запись номер 5","Пятница", 2));
-
+        arrNotes = new ArrayList<>();
         notesAdapter = new NotesAdapter(arrNotes);
 
         recyclerView = findViewById(R.id.recyclerViewNotes);
         recyclerView.setAdapter(notesAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT|ItemTouchHelper.RIGHT) {
+            @Override
+            public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+                return false;
+            }
+
+            @Override
+            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+                arrNotes.remove(viewHolder.getAdapterPosition());
+                notesAdapter.notifyDataSetChanged();
+            }
+        });
+        itemTouchHelper.attachToRecyclerView(recyclerView);
     }
 
     public void onClickAddBtn(View view) {
         Intent intent = new Intent(this, AddNoteActivity.class);
         mActivityForResult.launch(intent);
+
     }
 
 }

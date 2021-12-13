@@ -34,9 +34,9 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.NoteViewHold
 
         int nColor;
         switch (note.getnPriority()){
-            case 1: nColor = ContextCompat.getColor(holder.itemView.getContext(), android.R.color.holo_red_light);
+            case R.id.radioButtonHight: nColor = ContextCompat.getColor(holder.itemView.getContext(), android.R.color.holo_red_light);
             break;
-            case 2: nColor = ContextCompat.getColor(holder.itemView.getContext(), android.R.color.holo_orange_light);
+            case R.id.radioButtonMedium: nColor = ContextCompat.getColor(holder.itemView.getContext(), android.R.color.holo_orange_light);
             break;
             default:
                 nColor = ContextCompat.getColor(holder.itemView.getContext(), android.R.color.holo_green_light);
