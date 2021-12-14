@@ -3,12 +3,14 @@ package com.example.easynotes;
 import java.util.ArrayList;
 
 public class Note {
+    private int nId;
     private String sTitle;
     private String sDiscription;
     private String sDayOfWeek;
     private int nPriority;
 
-    public Note(String sTitle, String sDiscription, String sDayOfWeek, int nPriority) {
+    public Note(int nId, String sTitle, String sDiscription, String sDayOfWeek, int nPriority) {
+        this.nId = nId;
         this.sTitle = sTitle;
         this.sDiscription = sDiscription;
         this.sDayOfWeek = sDayOfWeek;
@@ -16,6 +18,10 @@ public class Note {
     }
 
     public Note(ArrayList<Note> arrNotes) {
+    }
+
+    public int getnId() {
+        return nId;
     }
 
     public String getsTitle() {

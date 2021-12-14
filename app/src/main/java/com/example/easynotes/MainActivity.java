@@ -6,6 +6,7 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -13,7 +14,11 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.Activity;
 import android.app.Instrumentation;
+import android.content.ContentValues;
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -28,6 +33,9 @@ public class MainActivity extends AppCompatActivity {
     private NotesAdapter notesAdapter;
     ArrayList<Note> arrNotes;
 
+    NotesDBHelper notesDBHelper;
+    SQLiteDatabase sqLiteDatabase;
+
     ActivityResultLauncher<Intent> mActivityForResult = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
             new ActivityResultCallback<ActivityResult>() {
                 @Override
@@ -40,9 +48,14 @@ public class MainActivity extends AppCompatActivity {
                         String sSpinDay = bundle.getString("spinDay");
                         int nPriority = bundle.getInt("priority", 0);
 
-                        Note note = new Note(sTitle, sDiscript, sSpinDay, nPriority);
-                        arrNotes.add(note);
-                        notesAdapter.notifyDataSetChanged();
+                        ContentValues contentValues = new ContentValues();
+                        contentValues.put(NotesContract.NotesEntry.COLUMN_TITLE, sTitle);
+                        contentValues.put(NotesContract.NotesEntry.COLUMN_DISCRIPTION, sDiscript);
+                        contentValues.put(NotesContract.NotesEntry.COLUMN_DAY_OF_WEEK, sSpinDay);
+                        contentValues.put(NotesContract.NotesEntry.COLUMN_PRIORITY, nPriority);
+
+                        sqLiteDatabase.insert(NotesContract.NotesEntry.TABLE_NAME, null, contentValues);
+                        refreshArrayNotes();
                     }
                 }
             });
@@ -51,6 +64,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        notesDBHelper = new NotesDBHelper(this);
+        sqLiteDatabase = notesDBHelper.getWritableDatabase();
 
         arrNotes = new ArrayList<>();
         notesAdapter = new NotesAdapter(arrNotes);
@@ -67,17 +83,48 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
-                arrNotes.remove(viewHolder.getAdapterPosition());
-                notesAdapter.notifyDataSetChanged();
+                removeFromDB(viewHolder.getAdapterPosition());
             }
         });
         itemTouchHelper.attachToRecyclerView(recyclerView);
+
+        refreshArrayNotes();
     }
 
     public void onClickAddBtn(View view) {
         Intent intent = new Intent(this, AddNoteActivity.class);
         mActivityForResult.launch(intent);
-
     }
 
+    private void refreshArrayNotes(){
+        arrNotes.clear();
+        Cursor cursor = sqLiteDatabase.query(NotesContract.NotesEntry.TABLE_NAME, null, null, null, null, null, null);
+        while(cursor.moveToNext()){
+            int nIdIdx = cursor.getColumnIndex(NotesContract.NotesEntry._ID);
+            int nId = cursor.getInt(nIdIdx);
+
+            int nTitleIdx = cursor.getColumnIndex(NotesContract.NotesEntry.COLUMN_TITLE);
+            String sTitle = cursor.getString(nTitleIdx);
+
+            int nDiscripIdx = cursor.getColumnIndex(NotesContract.NotesEntry.COLUMN_DISCRIPTION);
+            String sDiscription = cursor.getString(nDiscripIdx);
+
+            int nDayOfWeekIdx = cursor.getColumnIndex(NotesContract.NotesEntry.COLUMN_DAY_OF_WEEK);
+            String sDayOfWeekIdx = cursor.getString(nDayOfWeekIdx);
+
+            int nPriorityIdx = cursor.getColumnIndex(NotesContract.NotesEntry.COLUMN_PRIORITY);
+            int nPriority = cursor.getInt(nPriorityIdx);
+
+            arrNotes.add(new Note(nId, sTitle, sDiscription, sDayOfWeekIdx, nPriority));
+        }
+        notesAdapter.notifyDataSetChanged();
+    }
+
+    void removeFromDB(int position){
+        int nId = arrNotes.get(position).getnId();
+        String [] arrStr = new String[] {Integer.toString(nId)};
+        String sWhere = NotesContract.NotesEntry._ID + " =?";
+        sqLiteDatabase.delete(NotesContract.NotesEntry.TABLE_NAME, sWhere, arrStr);
+        refreshArrayNotes();
+    }
 }
