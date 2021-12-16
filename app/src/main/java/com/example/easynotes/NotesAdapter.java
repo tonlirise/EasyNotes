@@ -28,12 +28,12 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.NoteViewHold
     @Override
     public void onBindViewHolder(@NonNull NoteViewHolder holder, int position) {
         Note note = arrNotes.get(position);
-        holder.twTitle.setText(note.getsTitle());
-        holder.twDiscription.setText(note.getsDiscription());
-        holder.twDayOfWeek.setText(note.getsDayOfWeek());
+        holder.twTitle.setText(note.getTitle());
+        holder.twDiscription.setText(note.getDiscription());
+        holder.twDayOfWeek.setText(note.getDayOfWeek());
 
         int nColor;
-        switch (note.getnPriority()){
+        switch (note.getPriority()){
             case R.id.radioButtonHight: nColor = ContextCompat.getColor(holder.itemView.getContext(), android.R.color.holo_red_light);
             break;
             case R.id.radioButtonMedium: nColor = ContextCompat.getColor(holder.itemView.getContext(), android.R.color.holo_orange_light);

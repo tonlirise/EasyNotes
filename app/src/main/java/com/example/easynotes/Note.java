@@ -1,42 +1,75 @@
 package com.example.easynotes;
 
+import androidx.room.Entity;
+import androidx.room.Ignore;
+import androidx.room.PrimaryKey;
+
 import java.util.ArrayList;
 
+@Entity(tableName = "notes")
 public class Note {
-    private int nId;
-    private String sTitle;
-    private String sDiscription;
-    private String sDayOfWeek;
-    private int nPriority;
+    @PrimaryKey(autoGenerate = true )
+    private int Id;
 
-    public Note(int nId, String sTitle, String sDiscription, String sDayOfWeek, int nPriority) {
-        this.nId = nId;
-        this.sTitle = sTitle;
-        this.sDiscription = sDiscription;
-        this.sDayOfWeek = sDayOfWeek;
-        this.nPriority = nPriority;
+    private String Title;
+    private String Discription;
+    private String DayOfWeek;
+    private int Priority;
+
+    public Note(int Id, String Title, String Discription, String DayOfWeek, int Priority) {
+        this.Id = Id;
+        this.Title = Title;
+        this.Discription = Discription;
+        this.DayOfWeek = DayOfWeek;
+        this.Priority = Priority;
     }
 
-    public Note(ArrayList<Note> arrNotes) {
+    public int getId() {
+        return Id;
     }
 
-    public int getnId() {
-        return nId;
+    public String getTitle() {
+        return Title;
     }
 
-    public String getsTitle() {
-        return sTitle;
+    public String getDiscription() {
+        return Discription;
     }
 
-    public String getsDiscription() {
-        return sDiscription;
+    public String getDayOfWeek() {
+        return DayOfWeek;
     }
 
-    public String getsDayOfWeek() {
-        return sDayOfWeek;
+    public int getPriority() {
+        return Priority;
     }
 
-    public int getnPriority() {
-        return nPriority;
+    public void setId(int id) {
+        Id = id;
     }
+
+    public void setTitle(String title) {
+        Title = title;
+    }
+
+    public void setDiscription(String discription) {
+        Discription = discription;
+    }
+
+    public void setDayOfWeek(String dayOfWeek) {
+        DayOfWeek = dayOfWeek;
+    }
+
+    public void setPriority(int priority) {
+        Priority = priority;
+    }
+
+    @Ignore
+    public Note(String sTitle, String sDiscription, String sDayOfWeek, int nPriority) {
+        this.Title = sTitle;
+        this.Discription = sDiscription;
+        this.DayOfWeek = sDayOfWeek;
+        this.Priority = nPriority;
+    }
+
 }
