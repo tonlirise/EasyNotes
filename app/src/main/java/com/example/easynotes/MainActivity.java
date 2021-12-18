@@ -7,6 +7,9 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -32,8 +35,8 @@ public class MainActivity extends AppCompatActivity {
 
     private RecyclerView recyclerView;
     private NotesAdapter notesAdapter;
-    ArrayList<Note> arrNotes;
-    NotesDatabase notesDatabase;
+    private NotesViewModel notesViewModel;
+
 
     ActivityResultLauncher<Intent> mActivityForResult = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
             new ActivityResultCallback<ActivityResult>() {
@@ -48,9 +51,7 @@ public class MainActivity extends AppCompatActivity {
                         int nPriority = bundle.getInt("priority", 0);
 
                         Note note = new Note(sTitle, sDiscript, sSpinDay, nPriority);
-                        notesDatabase.notesDao().insertNote(note);
-
-                        refreshArrayNotes();
+                        notesViewModel.insertNote(note);
                     }
                 }
             });
@@ -60,10 +61,9 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        notesDatabase = NotesDatabase.getInstance(this);
-        arrNotes = new ArrayList<>();
-        notesAdapter = new NotesAdapter(arrNotes);
+        notesViewModel = new ViewModelProvider(this).get(NotesViewModel.class);
 
+        notesAdapter = new NotesAdapter();
         recyclerView = findViewById(R.id.recyclerViewNotes);
         recyclerView.setAdapter(notesAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -80,7 +80,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         itemTouchHelper.attachToRecyclerView(recyclerView);
-
         refreshArrayNotes();
     }
 
@@ -90,15 +89,18 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void refreshArrayNotes(){
-        List<Note> listNote = notesDatabase.notesDao().getAllNotes();
-        arrNotes.clear();
-        arrNotes.addAll(listNote);
-        notesAdapter.notifyDataSetChanged();
+        LiveData<List<Note>> listNote = notesViewModel.getAllNotes();
+        listNote.observe(this, new Observer<List<Note>>() {
+            @Override
+            public void onChanged(List<Note> notes) {
+                notesAdapter.setListNotes(notes);
+                notesAdapter.notifyDataSetChanged();
+            }
+        });
     }
 
     void removeFromDB(int position){
-        Note note = arrNotes.get(position);
-        notesDatabase.notesDao().deleteNote(note);
-        refreshArrayNotes();
+        Note note = notesAdapter.getListNotes().get(position);
+        notesViewModel.deleteNote(note);
     }
 }

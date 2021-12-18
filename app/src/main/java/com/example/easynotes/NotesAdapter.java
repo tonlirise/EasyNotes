@@ -10,12 +10,22 @@ import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.NoteViewHolder> {
-    private final ArrayList<Note> arrNotes;
+    private List<Note> listNotes;
 
-    public NotesAdapter(ArrayList<Note> arrNotes) {
-        this.arrNotes = arrNotes;
+    public NotesAdapter() {
+        listNotes = new ArrayList<>();
+    }
+
+    public void setListNotes(List<Note> listNotes) {
+        this.listNotes = listNotes;
+        notifyDataSetChanged();
+    }
+
+    public List<Note> getListNotes() {
+        return listNotes;
     }
 
     @NonNull
@@ -27,7 +37,7 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.NoteViewHold
 
     @Override
     public void onBindViewHolder(@NonNull NoteViewHolder holder, int position) {
-        Note note = arrNotes.get(position);
+        Note note = listNotes.get(position);
         holder.twTitle.setText(note.getTitle());
         holder.twDiscription.setText(note.getDiscription());
         holder.twDayOfWeek.setText(note.getDayOfWeek());
@@ -46,7 +56,7 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.NoteViewHold
 
     @Override
     public int getItemCount() {
-        return arrNotes.size();
+        return listNotes.size();
     }
 
     class NoteViewHolder extends RecyclerView.ViewHolder{
@@ -59,8 +69,6 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.NoteViewHold
             twTitle = itemView.findViewById(R.id.textViewTitle);
             twDiscription = itemView.findViewById(R.id.textViewDiscription);
             twDayOfWeek = itemView.findViewById(R.id.textViewDayOfWeek);
-
-
         }
     }
 }
